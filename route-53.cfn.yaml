@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Template to create CNAME records for existing hosted zones
+
+Parameters:
+  HostedZone:
+    Type: String
+    Description: The DNS name of an existing Amazon Route 53 hosted zone
+    AllowedPattern: '(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)'
+    ConstraintDescription: must be a valid DNS zone name.
+  SubDomain:
+    Type: String
+    Description: The SubDomain you want to add to the HostedZone you're working with
+  ResourceRecords:
+    Type: String
+    Description: Where the subdomain should redirect to
+
+Resources:
+  MyDNSRecord:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: !Join 
+        - ''
+        - - !Ref HostedZone
+          - .
+      Comment: CNAME redirect to aws.amazon.com.
+      Name: !Join 
+        - ''
+        - - !Ref SubDomain
+          - .
+          - !Ref HostedZone
+          - .
+      Type: CNAME
+      TTL: '900'
+      ResourceRecords:
+        - !Ref ResourceRecords
+
+Outputs:
+  CNAME:
+    Description: Fully qualified domain name
+    Value: !Ref MyDNSRecord
