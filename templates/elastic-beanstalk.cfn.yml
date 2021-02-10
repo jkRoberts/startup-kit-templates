@@ -14,17 +14,16 @@ Parameters:
     AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*$"
 
   StackType:
-    Description: node, rails, python, python3 or spring
+    Description: node, rails, python, python3
     Type: String
     MinLength: 1
     MaxLength: 255
     AllowedValues:
       - node
       - rails
-      - spring
       - python
       - python3
-    ConstraintDescription: Specify node, rails, python, python3 or spring
+    ConstraintDescription: Specify node, rails, python, python3
 
   EnvironmentName:
     Description: Environment name, either dev or prod.
@@ -108,7 +107,7 @@ Parameters:
     Type: Number
     MinValue: 1
     MaxValue: 20
-    Default: 2
+    Default: 1
     ConstraintDescription: Specify a number between 1 - 20
 
   AutoScalingMaxInstanceCount:
@@ -131,9 +130,7 @@ Mappings:
     node:
       stackName: 64bit Amazon Linux 2018.03 v4.5.3 running Node.js
     rails:
-      stackName: 64bit Amazon Linux 2018.03 v2.8.3 running Ruby 2.4 (Puma)
-    spring:
-      stackName: 64bit Amazon Linux 2018.03 v3.0.3 running Tomcat 8 Java 8
+      stackName: 64bit Amazon Linux 2 v3.2.2 running Ruby 2.6
     python:
       stackName: 64bit Amazon Linux 2018.03 v2.7.3 running Python 2.7
     python3:
@@ -360,26 +357,20 @@ Resources:
         Value:
           Fn::ImportValue: !Sub "${DatabaseStackName}-DatabaseURL"
 
-      # ENVIRONMENT VARIABLES - SPRING
       - Namespace: aws:elasticbeanstalk:application:environment
-        OptionName: spring.datasource.password
-        Value: !Ref DatabasePassword
-
-      - Namespace: aws:elasticbeanstalk:application:environment
-        OptionName: spring.datasource.username
+        OptionName: DATABASE_URL
         Value:
-          Fn::ImportValue: !Sub "${DatabaseStackName}-DatabaseUser"
+          Fn::Join:
+            - ''
+            - - "postgres://"
+              - Fn::ImportValue: !Sub "${DatabaseStackName}-DatabaseUser"
+              - ':'
+              - !Ref DatabasePassword
+              - '@'
+              - Fn::ImportValue: !Sub "${DatabaseStackName}-DatabaseURL"
+              - ':5432/'
+              - !Ref DatabaseName
 
-      - Namespace: aws:elasticbeanstalk:application:environment
-        OptionName: spring.datasource.url
-        Value:
-          "Fn::Join":
-          - ''
-          - - 'jdbc:mysql://'
-            - !ImportValue
-                "Fn::Sub": "${DatabaseStackName}-DatabaseURL"
-            - ':3306/'
-            - Ref: DatabaseName
 
   # IAM resources
   AppRole:
