@@ -9,7 +9,7 @@ Parameters:
 
   TemplateBucket:
     Type: String
-    Default: awslabs-startup-kit-templates-deploy-v5
+    Default: test-cfn-bucket-tokyo
     Description: The template bucket for the CloudFormation templates
 
   EnvironmentName:
@@ -77,25 +77,26 @@ Parameters:
 
   # elastic-beanstalk.cfn.yml parameters
   StackType:
-    Description: node, rails, python, python3 or spring.
+    Description: node, rails, python, python3.
     Type: String
-    Default: python
+    Default: rails
     AllowedValues:
       - node
       - rails
-      - spring
       - python
       - python3
-    ConstraintDescription: Specify node, rails, python, python3 or spring.
+    ConstraintDescription: Specify node, rails, python, python3.
 
   AppS3Bucket:
     Description: S3 Bucket containing your application package
     Type: String
+    Default: test-cfn-bucket-tokyo
     MinLength: 1
     MaxLength: 255
 
   AppS3Key:
     Description: S3 Bucket key for your application package
+    Default: wcc-engagement-0.1.0-beta3.zip
     Type: String
     MinLength: 1
     MaxLength: 255
@@ -107,7 +108,7 @@ Parameters:
   EbInstanceType:
     Description: The instance type for Elastic Beanstalk
     Type: String
-    Default: t2.small
+    Default: t2.medium
     ConstraintDescription: Instance type not supported
     AllowedValues:
       - t2.small
@@ -140,7 +141,7 @@ Parameters:
     Type: Number
     MinValue: 1
     MaxValue: 20
-    Default: 2
+    Default: 1
     ConstraintDescription: Specify a number between 1 - 20
 
   AutoScalingMaxInstanceCount:
@@ -180,7 +181,7 @@ Parameters:
     ConstraintDescription: Name must begin with a letter and contain only alphanumeric characters
 
   DatabaseEngine:
-    Default: aurora
+    Default: postgres
     Type: String
     Description: Database engines - Aurora MySQL, Aurora PostgreSQL, PostgreSQL, MariaDB and MySQL
     ConstraintDescription: Choose an engine from the drop down
